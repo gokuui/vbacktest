@@ -1,6 +1,8 @@
 """Richard Dennis Turtle Trading System 2 (55-day breakout)."""
 from __future__ import annotations
 
+import pandas as pd
+
 from vbacktest.exit_rules import StopLossRule, TrailingLowRule
 from vbacktest.indicators import IndicatorSpec
 from vbacktest.strategy import BarContext, ExitRule, Signal, SignalAction, Strategy
@@ -91,7 +93,6 @@ class TurtleTradingStrategy(Strategy):
                     continue
 
             else:
-                import pandas as pd
                 if not all(c in df.columns for c in needed):
                     continue
                 bar = df.iloc[idx]

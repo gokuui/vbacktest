@@ -153,7 +153,7 @@ def register_indicator(key: str, override: bool = False) -> Any:
 def get_strategy(key: str) -> Any:
     """Return strategy class registered under *key*.
 
-    Raises :class:`~vbacktest.exceptions.StrategyNotFoundError` if not found.
+    Raises :class:`~vbacktest.exceptions.RegistryError` if not found.
     """
     return strategy_registry.get(key)
 
@@ -161,7 +161,7 @@ def get_strategy(key: str) -> Any:
 def get_indicator(key: str) -> Any:
     """Return indicator function registered under *key*.
 
-    Raises :class:`~vbacktest.exceptions.StrategyNotFoundError` if not found.
+    Raises :class:`~vbacktest.exceptions.RegistryError` if not found.
     """
     return indicator_registry.get(key)
 

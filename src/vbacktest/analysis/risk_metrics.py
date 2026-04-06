@@ -166,8 +166,16 @@ def run_advanced_risk(
     equity: pd.Series,
     initial_capital: float,
     benchmark_returns: pd.Series | None = None,
+    n_strategies_tested: int = 1,
 ) -> list[TestResult]:
     """Professional quant risk: tail risk, concentration, turnover, autocorrelation.
+
+    Args:
+        n_strategies_tested: Number of strategies tried before selecting this one.
+            Used for the Deflated Sharpe Ratio (De Prado 2018): the more strategies
+            you tested, the higher the bar for statistical significance. Default ``1``
+            (no selection bias assumed). Set to e.g. ``50`` if you ran 50 backtests
+            and cherry-picked the best.
 
     Args:
         benchmark_returns: Optional date-indexed daily returns for regime analysis.
@@ -433,8 +441,8 @@ def run_advanced_risk(
             )
         )
 
-    # Deflated Sharpe Ratio (De Prado 2018, N=80 strategies tested)
-    N_STRATEGIES_TESTED = 80
+    # Deflated Sharpe Ratio (De Prado 2018)
+    N_STRATEGIES_TESTED = max(1, n_strategies_tested)
     ann_return_pct = daily_returns.mean() * 252
     ann_vol = daily_returns.std() * np.sqrt(252)
     observed_sharpe = ann_return_pct / ann_vol if ann_vol > 0 else 0.0

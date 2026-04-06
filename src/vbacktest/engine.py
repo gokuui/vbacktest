@@ -252,7 +252,7 @@ class BacktestEngine:
 
         available = self.portfolio.available_slots()
         risk_pct = self.config.position_sizing.risk_per_trade_pct
-        max_pos_pct = getattr(self.config.position_sizing, "max_position_pct", 20.0)
+        max_pos_pct = self.config.position_sizing.max_position_pct
 
         for signal in filtered[:available]:
             close_price = float(current_prices[signal.symbol]["close"])

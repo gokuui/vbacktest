@@ -1,6 +1,8 @@
 """Moving Average Crossover strategy."""
 from __future__ import annotations
 
+import pandas as pd
+
 import numpy as np
 
 from vbacktest.exit_rules import StopLossRule, TakeProfitPartialRule, TrailingATRStopRule, TrailingMARule
@@ -107,7 +109,6 @@ class MACrossoverStrategy(Strategy):
                     continue
                 bar = df.iloc[idx]
                 prev = df.iloc[idx - 1]
-                import pandas as pd
                 if any(pd.isna(bar[c]) for c in required):
                     continue
                 fc, fp = float(bar[self._fast_col]), float(prev[self._fast_col])

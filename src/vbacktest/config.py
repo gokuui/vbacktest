@@ -40,17 +40,20 @@ class PortfolioConfig:
 class ExecutionConfig:
     commission_pct: float = 0.1
     slippage_pct: float = 0.05
-    entry_on: str = "open"
-    exit_on: str = "open"
+    # Note: v1.0 executes all entries and exits at next bar's open.
+    # Configurable execution timing (entry_on / exit_on) is planned for v1.1.
 
 
 @dataclass
 class PositionSizingConfig:
     risk_per_trade_pct: float = 1.0
+    max_position_pct: float = 20.0  # max % of portfolio equity per position
 
     def __post_init__(self) -> None:
         if self.risk_per_trade_pct <= 0:
             raise ConfigError("risk_per_trade_pct must be > 0")
+        if not (0 < self.max_position_pct <= 100):
+            raise ConfigError("max_position_pct must be in (0, 100]")
 
 
 @dataclass

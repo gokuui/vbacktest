@@ -49,6 +49,7 @@ class GoNoGo:
         seed: int = 42,
         benchmark_returns: pd.Series | None = None,
         thresholds: GoNoGoThresholds | None = None,
+        n_strategies_tested: int = 1,
     ) -> None:
         self.trades = trades
         self.equity = equity
@@ -57,6 +58,7 @@ class GoNoGo:
         self.seed = seed
         self.benchmark_returns = benchmark_returns
         self.thresholds = thresholds or GoNoGoThresholds()
+        self.n_strategies_tested = n_strategies_tested
 
     def run(self, name: str = "strategy") -> ValidationReport:
         """Run all test categories and return a :class:`ValidationReport`.
@@ -99,6 +101,7 @@ class GoNoGo:
             self.equity,
             self.initial_capital,
             self.benchmark_returns,
+            self.n_strategies_tested,
         )
 
         report.results["Regime & Rolling"] = run_regime_rolling(

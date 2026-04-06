@@ -1,6 +1,8 @@
 """RSI mean reversion strategy."""
 from __future__ import annotations
 
+import pandas as pd
+
 from vbacktest.exit_rules import StopLossRule, TakeProfitPartialRule, TimeStopRule
 from vbacktest.indicators import IndicatorSpec
 from vbacktest.strategy import BarContext, ExitRule, Signal, SignalAction, Strategy
@@ -100,7 +102,6 @@ class RSIMeanReversionStrategy(Strategy):
             else:
                 if "rsi" not in df.columns:
                     continue
-                import pandas as pd
                 bar = df.iloc[idx]
                 prev = df.iloc[idx - 1]
                 if pd.isna(bar["rsi"]) or pd.isna(prev["rsi"]):

@@ -1,6 +1,8 @@
 """Bollinger Band breakout strategy."""
 from __future__ import annotations
 
+import pandas as pd
+
 from vbacktest.exit_rules import StopLossRule, TrailingATRStopRule
 from vbacktest.indicators import IndicatorSpec
 from vbacktest.strategy import BarContext, ExitRule, Signal, SignalAction, Strategy
@@ -85,7 +87,6 @@ class BollingerBreakoutStrategy(Strategy):
                     continue
 
             else:
-                import pandas as pd
                 needed = ("bb_upper", self._trend_col, self._atr_col, self._vol_col)
                 if not all(c in df.columns for c in needed):
                     continue

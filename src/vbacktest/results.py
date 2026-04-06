@@ -98,15 +98,16 @@ class BacktestResult:
         Accepts:
         - A JSON string
         - A parsed dict
-        - A file path string (if the string is an existing file path)
+        - A file path string (must start with ``/`` or ``./`` to be treated as
+          a path, not a JSON string).
 
         Schema migration:
         - ``config`` key (pre-1.0) is renamed to ``config_snapshot``.
         """
-        import os
-        if isinstance(data, str) and os.path.exists(data):
-            with open(data) as f:
-                data = f.read()
+        from pathlib import Path
+        if isinstance(data, str) and not data.lstrip().startswith(("{", "[")):
+            # Looks like a path, not inline JSON
+            data = Path(data).read_text()
         payload: dict[str, Any] = json.loads(data) if isinstance(data, str) else data
 
         # Schema migration: old key name

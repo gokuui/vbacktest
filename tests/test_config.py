@@ -45,8 +45,6 @@ class TestExecutionConfig:
         ec = ExecutionConfig()
         assert ec.commission_pct == 0.1
         assert ec.slippage_pct == 0.05
-        assert ec.entry_on == "open"
-        assert ec.exit_on == "open"
 
 
 class TestPositionSizingConfig:
