@@ -4,7 +4,7 @@ from __future__ import annotations
 import copy
 import logging
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
@@ -130,7 +130,7 @@ class BacktestEngine:
                 if symbol in current_prices:
                     close = current_prices[symbol].get("close")
                     if close is not None:
-                        position.update_current_price(float(close))
+                        position.update_current_price(float(close))  # type: ignore[arg-type]
 
             # Evaluate exit rules
             self.portfolio.mark_exits(trading_day, universe, universe_idx, current_prices)  # type: ignore[arg-type]
@@ -212,7 +212,7 @@ class BacktestEngine:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _warmup_days(self, indicator_specs: list) -> int:
+    def _warmup_days(self, indicator_specs: list[Any]) -> int:
         """Determine warmup period from indicator specs."""
         max_period = 0
         for spec in indicator_specs:
@@ -232,8 +232,8 @@ class BacktestEngine:
         self,
         signals: list[Signal],
         trading_day: pd.Timestamp,
-        current_prices: dict,
-        universe_arrays: dict | None,
+        current_prices: dict[str, Any],
+        universe_arrays: dict[str, Any] | None,
         universe_idx: dict[str, int],
     ) -> None:
         """Size and filter signals, create pending entry orders."""
@@ -278,7 +278,7 @@ class BacktestEngine:
         self,
         last_date: pd.Timestamp,
         universe: dict[str, pd.DataFrame],
-        date_index: dict[str, dict],
+        date_index: dict[str, dict[Any, Any]],
     ) -> None:
         """Liquidate all remaining positions at end of backtest."""
         from vbacktest.strategy import ExitCondition, ExitSignal

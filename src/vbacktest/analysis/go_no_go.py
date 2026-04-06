@@ -1,6 +1,8 @@
 """GoNoGo — orchestrates the full pre-live validation pipeline."""
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -40,7 +42,7 @@ class GoNoGo:
 
     def __init__(
         self,
-        trades: list,
+        trades: list[Any],
         equity: pd.Series,
         initial_capital: float = 100_000,
         mc_sims: int = 5000,
@@ -221,7 +223,7 @@ class GoNoGo:
                 "t-test p-value",
                 f"{p_one:.3f}",
                 status,
-                hard_nogo=(p_one >= thresholds.max_pvalue_warn),
+                hard_nogo=bool(p_one >= thresholds.max_pvalue_warn),
                 detail=detail,
             )
         )

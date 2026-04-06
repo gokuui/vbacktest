@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
@@ -303,14 +303,14 @@ class Portfolio:
                     )
                     stock_data = universe[symbol]
                     bar_idx = universe_idx[symbol]
-                    bar = current_prices[symbol]
+                    early_bar: Any = current_prices[symbol]
                     for rule in position.exit_rules:
-                        rule.update(position, bar, bar_idx, stock_data)
+                        rule.update(position, early_bar, bar_idx, stock_data)
                     continue
 
             stock_data = universe[symbol]
             bar_idx = universe_idx[symbol]
-            bar = (
+            bar: Any = (
                 current_prices[symbol]
                 if (current_prices and symbol in current_prices)
                 else stock_data.iloc[bar_idx]

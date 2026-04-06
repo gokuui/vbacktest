@@ -51,7 +51,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
     result = engine.run()
     print_report(result)
     if args.output:
-        result.to_json(args.output)
+        from pathlib import Path
+        Path(args.output).write_text(result.to_json())
     return 0
 
 

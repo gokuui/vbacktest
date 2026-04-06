@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import multiprocessing
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
@@ -61,7 +61,7 @@ def convert_universe_to_numpy_arrays(
     arrays: dict[str, dict[str, np.ndarray]] = {}
     for symbol, df in universe.items():
         arrays[symbol] = {
-            col: df[col].values
+            col: np.asarray(df[col].values)
             for col in df.columns
             if col != "date"
         }
@@ -162,7 +162,7 @@ def _load_stock_worker(
         return symbol, None
 
 
-def _load_stock_worker_wrapper(args: tuple) -> tuple[str, pd.DataFrame | None]:
+def _load_stock_worker_wrapper(args: Any) -> tuple[str, pd.DataFrame | None]:
     return _load_stock_worker(*args)
 
 
@@ -322,7 +322,7 @@ def precompute_indicators(
             universe[symbol] = df_copy
         return universe
 
-    def _worker(item: tuple) -> tuple[str, pd.DataFrame | None]:
+    def _worker(item: Any) -> tuple[str, pd.DataFrame | None]:
         sym, df, specs = item
         df_copy = df.copy(deep=True)
         for spec in specs:
@@ -373,7 +373,7 @@ def build_date_index(
             }
         return date_index
 
-    def _worker(item: tuple) -> tuple[str, dict[pd.Timestamp, int]]:
+    def _worker(item: Any) -> tuple[str, dict[pd.Timestamp, int]]:
         sym, df = item
         return sym, {pd.Timestamp(d): i for i, d in enumerate(df["date"].values)}
 

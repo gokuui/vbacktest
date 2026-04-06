@@ -1,6 +1,8 @@
 """Monte Carlo simulation tests for go/no-go analysis."""
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pandas as pd
 
@@ -16,10 +18,10 @@ def _compound_cagr(
         return 0.0
     factors = 1 + pnl_pcts / 100
     final = initial_capital * np.prod(factors)
-    return ((final / initial_capital) ** (365 / calendar_days) - 1) * 100
+    return float(((final / initial_capital) ** (365 / calendar_days) - 1) * 100)
 
 
-def _portfolio_pnl_pcts(trades: list, equity: pd.Series) -> np.ndarray:
+def _portfolio_pnl_pcts(trades: list[Any], equity: pd.Series) -> np.ndarray:
     """Convert position PnL to portfolio-level % return per trade.
 
     Uses equity at each trade's exit date so compounding reflects the actual
@@ -45,14 +47,14 @@ def _portfolio_pnl_pcts(trades: list, equity: pd.Series) -> np.ndarray:
 
 
 def run_monte_carlo(
-    trades: list,
+    trades: list[Any],
     equity: pd.Series,
     initial_capital: float,
     calendar_days: int,
     n_sims: int = 5000,
     seed: int = 42,
     thresholds: MonteCarloThresholds | None = None,
-) -> tuple[list[TestResult], list]:
+) -> tuple[list[TestResult], list[Any]]:
     """Run three Monte Carlo methods.
 
     Returns:

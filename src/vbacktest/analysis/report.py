@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
+from typing import Any
 
 # ANSI colour codes
 _GREEN = "\033[92m"
@@ -46,7 +47,7 @@ class ValidationReport:
         """Return overall verdict string."""
         return self.overall
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Structured dict for programmatic access."""
         return {
             "name": self.name,

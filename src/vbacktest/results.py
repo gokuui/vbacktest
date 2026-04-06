@@ -183,7 +183,7 @@ def compute_stats(
         if len(returns) > 0 and returns.std() > 0:
             stats.sharpe_ratio = (returns.mean() / returns.std()) * np.sqrt(252)
 
-        downside = np.minimum(returns.values, 0.0)
+        downside = np.minimum(np.asarray(returns.values), 0.0)
         downside_dev = np.sqrt(np.mean(downside ** 2))
         if downside_dev > 0:
             stats.sortino_ratio = (returns.mean() / downside_dev) * np.sqrt(252)
@@ -309,13 +309,13 @@ def _compute_benchmark_comparison(
     b = aligned["b"]
 
     # Beta via covariance / variance
-    cov = np.cov(s.values, b.values)
-    bench_var = float(np.var(b.values, ddof=1))
+    cov = np.cov(np.asarray(s.values), np.asarray(b.values))
+    bench_var = float(np.var(np.asarray(b.values), ddof=1))
     beta = float(cov[0, 1] / bench_var) if bench_var > 0 else 0.0
 
     # Annualised benchmark return
-    bench_total = (1 + b).prod() - 1
-    bench_cagr = float((1 + bench_total) ** (252 / len(b)) - 1) * 100
+    bench_total = (1 + b).prod() - 1  # type: ignore[operator]
+    bench_cagr = float((1 + bench_total) ** (252 / len(b)) - 1) * 100  # type: ignore[operator,arg-type]
 
     # Benchmark Sharpe
     bench_sharpe = (
@@ -335,8 +335,8 @@ def _compute_benchmark_comparison(
 
     return {
         "strategy_return": stats.total_return_pct,
-        "benchmark_return": float(bench_total * 100),
-        "total_return_diff": stats.total_return_pct - float(bench_total * 100),
+        "benchmark_return": float(bench_total * 100),  # type: ignore[operator,arg-type]
+        "total_return_diff": stats.total_return_pct - float(bench_total * 100),  # type: ignore[operator,arg-type]
         "alpha": alpha,
         "beta": beta,
         "strategy_sharpe": stats.sharpe_ratio,

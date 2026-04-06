@@ -3,15 +3,17 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 from vbacktest.indicators import IndicatorSpec  # noqa: F401 — re-exported for convenience
 
+from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
-    from vbacktest.portfolio import Portfolio, Position
+    from vbacktest.portfolio import Portfolio
 
 
 class SignalAction(Enum):
@@ -78,8 +80,8 @@ class ExitRule(ABC):
     @abstractmethod
     def check(
         self,
-        position: Position,
-        bar: pd.Series,
+        position: Any,
+        bar: Any,
         bar_idx: int,
         stock_data: pd.DataFrame,
     ) -> ExitSignal | None:
@@ -89,8 +91,8 @@ class ExitRule(ABC):
     @abstractmethod
     def update(
         self,
-        position: Position,
-        bar: pd.Series,
+        position: Any,
+        bar: Any,
         bar_idx: int,
         stock_data: pd.DataFrame,
     ) -> None:

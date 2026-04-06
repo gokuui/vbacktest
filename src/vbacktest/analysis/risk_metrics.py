@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -12,9 +13,9 @@ from vbacktest.analysis.report import TestResult
 
 
 def run_risk_metrics(
-    trades: list,
+    trades: list[Any],
     equity: pd.Series,
-    mc_shuffled_sims: list,  # retained for API compat — not used
+    mc_shuffled_sims: list[Any],  # retained for API compat — not used
     initial_capital: float,
     thresholds: RiskThresholds | None = None,
 ) -> list[TestResult]:
@@ -101,7 +102,7 @@ def run_risk_metrics(
     ruin_count = 0
     n_ruin_sims = 1000
     for _ in range(n_ruin_sims):
-        sim_returns = rng.choice(daily_returns, size=n_days, replace=True)
+        sim_returns = rng.choice(np.asarray(daily_returns), size=n_days, replace=True)
         eq_path = initial_capital * np.cumprod(1 + sim_returns)
         if np.any(eq_path < ruin_threshold):
             ruin_count += 1
@@ -161,7 +162,7 @@ def run_risk_metrics(
 
 
 def run_advanced_risk(
-    trades: list,
+    trades: list[Any],
     equity: pd.Series,
     initial_capital: float,
     benchmark_returns: pd.Series | None = None,
@@ -247,7 +248,7 @@ def run_advanced_risk(
         )
 
     # Sortino ratio
-    downside_dev = np.sqrt(np.mean(np.minimum(daily_returns.values, 0) ** 2)) * np.sqrt(252)
+    downside_dev = np.sqrt(np.mean(np.minimum(np.asarray(daily_returns.values), 0) ** 2)) * np.sqrt(252)
     ann_return = daily_returns.mean() * 252
     sortino = ann_return / downside_dev if downside_dev > 0 else 0.0
     sort_status = "PASS" if sortino >= 2.0 else ("WARN" if sortino >= 1.0 else "FAIL")
@@ -314,8 +315,8 @@ def run_advanced_risk(
     )
 
     # Trade distribution (skew/kurt)
-    trade_skew = float(pd.Series(pnl_pcts).skew())
-    trade_kurt = float(pd.Series(pnl_pcts).kurtosis())
+    trade_skew = float(pd.Series(pnl_pcts).skew())  # type: ignore[arg-type]
+    trade_kurt = float(pd.Series(pnl_pcts).kurtosis())  # type: ignore[arg-type]
     skew_status = (
         "PASS" if trade_skew > 0 else ("WARN" if trade_skew > -0.5 else "FAIL")
     )
@@ -465,8 +466,8 @@ def run_advanced_risk(
             b_ann = bench_annual.loc[common_idx]
             s_ann = strat_annual.loc[common_idx]
             bull_mask = b_ann > 0
-            bear_returns = s_ann[~bull_mask]
-            bull_returns = s_ann[bull_mask]
+            bear_returns = s_ann.loc[~bull_mask]  # type: ignore[index]
+            bull_returns = s_ann.loc[bull_mask]  # type: ignore[index]
             bull_avg = float(bull_returns.mean() * 100) if len(bull_returns) > 0 else 0.0
             bear_avg = float(bear_returns.mean() * 100) if len(bear_returns) > 0 else 0.0
             bear_positive = (

@@ -41,7 +41,7 @@ def run_regime_rolling(
 
     # Annual consistency
     eq_df = equity.to_frame("equity")
-    eq_df["year"] = eq_df.index.year
+    eq_df["year"] = pd.DatetimeIndex(eq_df.index).year
     yearly = eq_df.groupby("year")["equity"].agg(["first", "last"])
     yearly["ret"] = (yearly["last"] / yearly["first"] - 1) * 100
     pct_pos_years = float((yearly["ret"] > 0).mean() * 100)
@@ -56,11 +56,11 @@ def run_regime_rolling(
             {"port": port_returns, "bench": benchmark_returns}
         ).dropna()
         if len(aligned) > 50:
-            slope, intercept, _, _, _ = stats.linregress(
-                aligned["bench"].values, aligned["port"].values
+            reg = stats.linregress(
+                np.asarray(aligned["bench"].values), np.asarray(aligned["port"].values)
             )
-            beta = float(slope)
-            alpha_ann = float(intercept) * 252 * 100
+            beta = float(reg.slope)
+            alpha_ann = float(reg.intercept) * 252 * 100
             results.append(
                 TestResult(
                     "Alpha vs benchmark",

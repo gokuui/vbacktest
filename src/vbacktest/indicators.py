@@ -83,7 +83,7 @@ def atr(df: pd.DataFrame, period: int = 14, output_col: str = 'atr') -> pd.DataF
     tr2 = (high - prev_close).abs()
     tr3 = (low - prev_close).abs()
 
-    true_range = np.maximum(np.maximum(tr1, tr2), tr3)
+    true_range = pd.Series(np.maximum(np.maximum(tr1, tr2), tr3), index=df.index)
 
     # Use Wilder's smoothing (alpha=1/period, NOT span=period)
     df[output_col] = true_range.ewm(alpha=1/period, adjust=False, min_periods=period).mean()
@@ -351,18 +351,18 @@ def adx(df: pd.DataFrame, period: int = 14, output_col: str | None = None) -> pd
     up_move = high - high.shift(1)
     down_move = low.shift(1) - low
 
-    plus_dm = np.where((up_move > down_move) & (up_move > 0), up_move, 0.0)
-    minus_dm = np.where((down_move > up_move) & (down_move > 0), down_move, 0.0)
+    plus_dm_arr = np.where((up_move > down_move) & (up_move > 0), up_move, 0.0)
+    minus_dm_arr = np.where((down_move > up_move) & (down_move > 0), down_move, 0.0)
 
-    plus_dm = pd.Series(plus_dm, index=df.index)
-    minus_dm = pd.Series(minus_dm, index=df.index)
+    plus_dm = pd.Series(plus_dm_arr, index=df.index)
+    minus_dm = pd.Series(minus_dm_arr, index=df.index)
 
     # Step 2: Calculate True Range
     prev_close = close.shift(1)
     tr1 = high - low
     tr2 = (high - prev_close).abs()
     tr3 = (low - prev_close).abs()
-    true_range = np.maximum(np.maximum(tr1, tr2), tr3)
+    true_range = pd.Series(np.maximum(np.maximum(tr1, tr2), tr3), index=df.index)
 
     # Step 3: Wilder's smoothing (alpha=1/period) for TR, +DM, -DM
     alpha = 1.0 / period
@@ -422,7 +422,7 @@ def keltner_channel(df: pd.DataFrame, ema_period: int = 20, atr_period: int = 10
     tr1 = high - low
     tr2 = (high - prev_close).abs()
     tr3 = (low - prev_close).abs()
-    true_range = np.maximum(np.maximum(tr1, tr2), tr3)
+    true_range = pd.Series(np.maximum(np.maximum(tr1, tr2), tr3), index=df.index)
     keltner_atr = true_range.ewm(alpha=1/atr_period, adjust=False, min_periods=atr_period).mean()
 
     df['keltner_upper'] = df['keltner_mid'] + atr_multiplier * keltner_atr
@@ -432,7 +432,7 @@ def keltner_channel(df: pd.DataFrame, ema_period: int = 20, atr_period: int = 10
 
 
 # Registry of all indicator functions
-INDICATOR_REGISTRY: dict[str, Callable] = {
+INDICATOR_REGISTRY: dict[str, Callable[..., pd.DataFrame]] = {
     'sma': sma,
     'ema': ema,
     'atr': atr,
@@ -465,4 +465,5 @@ def apply_indicator(df: pd.DataFrame, spec: IndicatorSpec) -> pd.DataFrame:
         KeyError: If spec.name is not found in INDICATOR_REGISTRY.
     """
     fn = INDICATOR_REGISTRY[spec.name]
-    return fn(df, **spec.params)
+    result: pd.DataFrame = fn(df, **spec.params)
+    return result

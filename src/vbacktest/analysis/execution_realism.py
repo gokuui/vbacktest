@@ -1,13 +1,15 @@
 """Post-hoc execution realism tests: slippage and commission ladders."""
 from __future__ import annotations
 
+from typing import Any
+
 import pandas as pd
 
 from vbacktest.analysis.report import TestResult
 
 
 def run_execution_realism(
-    trades: list,
+    trades: list[Any],
     equity: pd.Series,
     initial_capital: float,
     calendar_days: int,
@@ -32,7 +34,7 @@ def run_execution_realism(
         adj_final = final_equity - extra_cost_total
         if adj_final <= 0:
             return -100.0
-        return ((adj_final / initial_capital) ** (365 / calendar_days) - 1) * 100
+        return float(((adj_final / initial_capital) ** (365 / calendar_days) - 1) * 100)
 
     results: list[TestResult] = []
 
