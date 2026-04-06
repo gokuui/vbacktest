@@ -1,0 +1,43 @@
+[project]
+name = "vbacktest"
+version = "0.1.0"
+description = "Production-grade day-by-day backtesting framework for equities"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+    "pyyaml>=6.0",
+    "scipy>=1.9",
+    "pyarrow>=10.0",
+]
+
+[project.optional-dependencies]
+strategies = []
+dev = [
+    "pytest>=7.0",
+    "mypy>=1.0",
+    "pandas-stubs",
+]
+
+[project.scripts]
+vbacktest = "vbacktest.cli.main:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow",
+]
+
+[tool.mypy]
+strict = true
+warn_return_any = true
+warn_unused_configs = true
