@@ -86,13 +86,27 @@ class BacktestResult:
         }
         return json.dumps(payload, default=str)
 
+    def print_report(self) -> None:
+        """Print a formatted performance report to stdout."""
+        from vbacktest.results import print_report as _print_report
+        _print_report(self)
+
     @classmethod
     def from_json(cls, data: str | dict[str, Any]) -> BacktestResult:
-        """Deserialise from a JSON string or dict.
+        """Deserialise from a JSON string, dict, or file path.
+
+        Accepts:
+        - A JSON string
+        - A parsed dict
+        - A file path string (if the string is an existing file path)
 
         Schema migration:
         - ``config`` key (pre-1.0) is renamed to ``config_snapshot``.
         """
+        import os
+        if isinstance(data, str) and os.path.exists(data):
+            with open(data) as f:
+                data = f.read()
         payload: dict[str, Any] = json.loads(data) if isinstance(data, str) else data
 
         # Schema migration: old key name

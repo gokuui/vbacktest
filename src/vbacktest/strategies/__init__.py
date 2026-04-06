@@ -16,11 +16,28 @@ _sr.register_fn("rsi_mean_reversion", RSIMeanReversionStrategy)
 _sr.register_fn("turtle_trading", TurtleTradingStrategy)
 _sr.register_fn("volume_breakout", VolumeBreakoutStrategy)
 
+# Short-name aliases for ergonomic imports:
+#   from vbacktest.strategies import MACrossover
+MACrossover = MACrossoverStrategy
+RSIMeanReversion = RSIMeanReversionStrategy
+BollingerBreakout = BollingerBreakoutStrategy
+Momentum = MomentumStrategy
+VolumeBreakout = VolumeBreakoutStrategy
+TurtleTrading = TurtleTradingStrategy
+
 __all__ = [
+    # Full names (canonical)
     "BollingerBreakoutStrategy",
     "MACrossoverStrategy",
     "MomentumStrategy",
     "RSIMeanReversionStrategy",
     "TurtleTradingStrategy",
     "VolumeBreakoutStrategy",
+    # Short aliases
+    "BollingerBreakout",
+    "MACrossover",
+    "Momentum",
+    "RSIMeanReversion",
+    "TurtleTrading",
+    "VolumeBreakout",
 ]

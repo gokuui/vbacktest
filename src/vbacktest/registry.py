@@ -150,6 +150,22 @@ def register_indicator(key: str, override: bool = False) -> Any:
     return indicator_registry.register(key, override=override)
 
 
+def get_strategy(key: str) -> Any:
+    """Return strategy class registered under *key*.
+
+    Raises :class:`~vbacktest.exceptions.StrategyNotFoundError` if not found.
+    """
+    return strategy_registry.get(key)
+
+
+def get_indicator(key: str) -> Any:
+    """Return indicator function registered under *key*.
+
+    Raises :class:`~vbacktest.exceptions.StrategyNotFoundError` if not found.
+    """
+    return indicator_registry.get(key)
+
+
 def list_strategies() -> list[str]:
     """Return sorted list of registered strategy keys."""
     return strategy_registry.keys()
@@ -158,3 +174,9 @@ def list_strategies() -> list[str]:
 def list_indicators() -> list[str]:
     """Return sorted list of registered indicator keys."""
     return indicator_registry.keys()
+
+
+def _reset_registries() -> None:
+    """Reset both registries to empty state. Intended for use in tests only."""
+    strategy_registry._entries.clear()
+    indicator_registry._entries.clear()
