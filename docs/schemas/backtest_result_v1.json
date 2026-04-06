@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "vbacktest BacktestResult v1.0",
+  "type": "object",
+  "required": ["schema_version", "trades", "equity_curve", "stats", "config_snapshot", "metadata"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "strategy_name": {"type": "string"},
+        "vbacktest_version": {"type": "string"},
+        "run_timestamp": {"type": "string", "format": "date-time"}
+      }
+    },
+    "trades": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "entry_date", "entry_price", "exit_date", "exit_price", "shares", "pnl"],
+        "properties": {
+          "symbol": {"type": "string"},
+          "entry_date": {"type": "string"},
+          "entry_price": {"type": "number"},
+          "exit_date": {"type": "string"},
+          "exit_price": {"type": "number"},
+          "shares": {"type": "integer"},
+          "pnl": {"type": "number"},
+          "pnl_pct": {"type": "number"},
+          "holding_days": {"type": "integer"},
+          "exit_reason": {"type": "string"},
+          "commission": {"type": "number"}
+        }
+      }
+    },
+    "equity_curve": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "equity"],
+        "properties": {
+          "date": {"type": "string"},
+          "equity": {"type": "number"},
+          "returns": {"type": ["number", "null"]},
+          "cash": {"type": "number"},
+          "positions_value": {"type": "number"}
+        }
+      }
+    },
+    "config_snapshot": {
+      "type": "object",
+      "description": "Serialized BacktestConfig at run time",
+      "properties": {
+        "portfolio": {
+          "type": "object",
+          "properties": {
+            "initial_capital": {"type": "number"},
+            "max_positions": {"type": "integer"}
+          }
+        },
+        "execution": {
+          "type": "object",
+          "properties": {
+            "commission_pct": {"type": "number"},
+            "slippage_pct": {"type": "number"}
+          }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "total_return_pct": {"type": "number"},
+        "cagr": {"type": "number"},
+        "sharpe_ratio": {"type": "number"},
+        "sortino_ratio": {"type": "number"},
+        "max_drawdown_pct": {"type": "number"},
+        "calmar_ratio": {"type": "number"},
+        "win_rate": {"type": "number"},
+        "profit_factor": {"type": "number"},
+        "total_trades": {"type": "integer"},
+        "expectancy_pct": {"type": "number"},
+        "avg_holding_days": {"type": "number"}
+      }
+    }
+  }
+}
