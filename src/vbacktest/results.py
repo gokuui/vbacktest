@@ -299,7 +299,7 @@ def _compute_benchmark_comparison(
 ) -> dict[str, float]:
     """Compute alpha, beta and other comparison metrics."""
     aligned = pd.concat(
-        [strategy_returns.rename("s"), benchmark_returns.rename("b")], axis=1
+        [strategy_returns.rename("s"), benchmark_returns.rename("b")], axis=1, sort=True
     ).dropna()
 
     if len(aligned) < 2:
