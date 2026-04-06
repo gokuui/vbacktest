@@ -8,15 +8,10 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
+from vbacktest.indicators import IndicatorSpec  # noqa: F401 — re-exported for convenience
+
 if TYPE_CHECKING:
     from vbacktest.portfolio import Portfolio, Position
-
-
-@dataclass
-class IndicatorSpec:
-    """Specification for a technical indicator."""
-    name: str
-    params: dict[str, Any] = field(default_factory=dict)
 
 
 class SignalAction(Enum):
