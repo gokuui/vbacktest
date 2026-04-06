@@ -134,3 +134,27 @@ strategy_registry: Registry = Registry("strategy")
 
 #: Global indicator registry.  Maps names to indicator *functions*.
 indicator_registry: Registry = Registry("indicator")
+
+
+# ---------------------------------------------------------------------------
+# Convenience helpers
+# ---------------------------------------------------------------------------
+
+def register_strategy(key: str, override: bool = False) -> Any:
+    """Decorator: register a strategy class in the global strategy registry."""
+    return strategy_registry.register(key, override=override)
+
+
+def register_indicator(key: str, override: bool = False) -> Any:
+    """Decorator: register an indicator function in the global indicator registry."""
+    return indicator_registry.register(key, override=override)
+
+
+def list_strategies() -> list[str]:
+    """Return sorted list of registered strategy keys."""
+    return strategy_registry.keys()
+
+
+def list_indicators() -> list[str]:
+    """Return sorted list of registered indicator keys."""
+    return indicator_registry.keys()
