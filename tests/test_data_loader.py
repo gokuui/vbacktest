@@ -343,3 +343,39 @@ class TestLoadUniverse:
         u = load_universe(d, num_workers=1)
         assert "BAD" not in u
         assert "GOOD" in u
+
+
+class TestLoadUniverseNewEdgeCases:
+    """Edge cases not covered by existing TestLoadUniverse tests."""
+
+    def test_corrupt_parquet_skipped_valid_symbols_loaded(self, tmp_path) -> None:
+        """Two valid parquet files + one corrupt binary → returns only the 2 valid symbols."""
+        _write_parquet(_make_df(n=250), tmp_path / "GOOD1.parquet")
+        _write_parquet(_make_df(n=250), tmp_path / "GOOD2.parquet")
+        # Corrupt parquet: random bytes, not valid parquet magic bytes
+        (tmp_path / "CORRUPT.parquet").write_bytes(b"not a parquet file at all")
+
+        result = load_universe(tmp_path, min_history_days=200, num_workers=1)
+        assert "GOOD1" in result
+        assert "GOOD2" in result
+        assert "CORRUPT" not in result
+
+    def test_symbol_excluded_after_date_range_filter(self, tmp_path) -> None:
+        """Symbol with data only outside the requested date range is excluded."""
+        def _make_dated_df(start: str, n: int = 250) -> pd.DataFrame:
+            df = _make_df(n=n)
+            df["date"] = pd.date_range(start, periods=n, freq="B")
+            return df
+
+        _write_parquet(_make_dated_df("2015-01-01"), tmp_path / "EARLY.parquet")
+        _write_parquet(_make_dated_df("2020-01-01"), tmp_path / "RECENT.parquet")
+
+        result = load_universe(
+            tmp_path,
+            start_date="2020-01-01",
+            min_history_days=200,
+            num_workers=1,
+        )
+        # EARLY has no data from 2020 onwards → below min_history_days after filter
+        assert "EARLY" not in result
+        assert "RECENT" in result
