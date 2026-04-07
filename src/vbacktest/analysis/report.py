@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 # ANSI colour codes
 _GREEN = "\033[92m"
@@ -26,6 +26,8 @@ def _icon(status: str) -> str:
 @dataclass
 class TestResult:
     """Single test outcome within a validation category."""
+
+    __test__: ClassVar[bool] = False
 
     name: str
     value: str       # formatted display value
