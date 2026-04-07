@@ -1,6 +1,8 @@
 """Smoke tests for the extras strategies package."""
 from __future__ import annotations
 
+from typing import Any
+
 import vbacktest.strategies  # noqa: F401 — registers core 6
 import vbacktest.strategies.extras  # noqa: F401 — registers extras
 
@@ -101,7 +103,7 @@ def _make_base_df(n: int = 300) -> pd.DataFrame:
     })
 
 
-def _make_arrays(df: pd.DataFrame, extra: dict) -> dict:
+def _make_arrays(df: pd.DataFrame, extra: dict[str, Any]) -> dict[str, Any]:
     """Build numpy arrays dict from df columns + extra precomputed columns."""
     arrays = {col: df[col].to_numpy(dtype=float) for col in df.columns if col != "date"}
     arrays.update(extra)
@@ -121,7 +123,7 @@ def _ctx_slow(symbol: str, df: pd.DataFrame, idx: int) -> BarContext:
     )
 
 
-def _ctx_fast(symbol: str, df: pd.DataFrame, idx: int, arrays: dict) -> BarContext:
+def _ctx_fast(symbol: str, df: pd.DataFrame, idx: int, arrays: dict[str, Any]) -> BarContext:
     """BarContext using fast path (universe_arrays provided)."""
     bar = {col: df[col].iloc[idx] for col in df.columns if col != "date"}
     return BarContext(
@@ -212,10 +214,10 @@ class TestMinerviniSEPALogic:
 
         # ATR contraction: recent(idx-10:idx) mean=1.0 < earlier(idx-30:idx-10) mean*0.7=5*0.7=3.5
         df["atr_14"] = 5.0  # baseline (earlier)
-        df.iloc[idx - 10:idx, df.columns.get_loc("atr_14")] = 1.0  # recent = low
+        df.loc[df.index[idx - 10:idx], "atr_14"] = 1.0  # recent = low
 
         # Breakout: close(105) > 10-day high. Set high[idx-10:idx] = 104
-        df.iloc[idx - 10:idx, df.columns.get_loc("high")] = 104.0
+        df.loc[df.index[idx - 10:idx], "high"] = 104.0
 
         # Volume surge: need volume > volume_sma_50 * 1.3
         df["volume_sma_50"] = 1_000_000.0
@@ -276,7 +278,7 @@ class TestADXTrendLogic:
 
         # ATR contraction (filter 8): recent < earlier * 0.8
         df["atr_14"] = 3.0  # earlier
-        df.iloc[idx - 10:idx, df.columns.get_loc("atr_14")] = 1.0  # recent=1.0 < 3.0*0.8=2.4 ✓
+        df.loc[df.index[idx - 10:idx], "atr_14"] = 1.0  # recent=1.0 < 3.0*0.8=2.4 ✓
 
         # Required for exit rule column lookup
         df["sma_10"] = 103.0
@@ -372,8 +374,8 @@ class TestFilteredMomentumLogic:
 
         # ATR contraction: recent < earlier
         df["atr_14"] = 3.0
-        df.iloc[idx - 5:idx + 1, df.columns.get_loc("atr_14")] = 1.0  # recent
-        df.iloc[idx - 20:idx - 5, df.columns.get_loc("atr_14")] = 3.0  # earlier
+        df.loc[df.index[idx - 5:idx + 1], "atr_14"] = 1.0  # recent
+        df.loc[df.index[idx - 20:idx - 5], "atr_14"] = 3.0  # earlier
 
         df["sma_10"] = 108.0
 
@@ -453,8 +455,8 @@ class TestFilteredMomentumRanking:
             df["roc_63"] = roc_val
             df["high_52w"] = 110.0
             df["atr_14"] = 3.0
-            df.iloc[idx - 5:idx + 1, df.columns.get_loc("atr_14")] = 1.0
-            df.iloc[idx - 20:idx - 5, df.columns.get_loc("atr_14")] = 3.0
+            df.loc[df.index[idx - 5:idx + 1], "atr_14"] = 1.0
+            df.loc[df.index[idx - 20:idx - 5], "atr_14"] = 3.0
             df["sma_10"] = 108.0
             return df
 
