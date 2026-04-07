@@ -100,3 +100,19 @@ class TestBacktestConfig:
         assert hasattr(bc, "portfolio")
         assert hasattr(bc, "execution")
         assert hasattr(bc, "performance")
+
+
+class TestBacktestConfigSimpleValidation:
+    def test_unknown_kwarg_raises_config_error(self):
+        with pytest.raises(ConfigError, match="Unknown parameters"):
+            BacktestConfig.simple("/tmp/data", typo_param=123)
+
+    def test_multiple_unknown_kwargs_listed_in_error(self):
+        with pytest.raises(ConfigError, match="foo") as exc_info:
+            BacktestConfig.simple("/tmp/data", foo=1, bar=2)
+        assert "bar" in str(exc_info.value)
+
+    def test_known_kwargs_still_work(self):
+        bc = BacktestConfig.simple("/tmp/data", capital=50_000, max_positions=3)
+        assert bc.portfolio.initial_capital == 50_000
+        assert bc.portfolio.max_positions == 3

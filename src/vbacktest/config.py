@@ -83,6 +83,11 @@ class BacktestConfig:
         max_positions: int = 10,
         **kwargs: Any,
     ) -> BacktestConfig:
+        if kwargs:
+            raise ConfigError(
+                f"Unknown parameters: {sorted(kwargs)}. "
+                f"Valid parameters are: capital, max_positions"
+            )
         return cls(
             data=DataConfig(validated_dir=validated_dir),
             portfolio=PortfolioConfig(initial_capital=capital, max_positions=max_positions),
